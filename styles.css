@@ -1,0 +1,128 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+}
+.sticky-header {
+    position: sticky;
+    top: 0;
+    background-color: rgba(209, 236, 246, 0.4);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1000;
+    padding: 10px 0;
+}
+.chart-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 15px;
+    margin: 0;
+}
+.controls {
+    text-align: center;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding: 0 20px 0 20px;
+}
+.control-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+button {
+    padding: 10px;
+    font-size: 14px;
+    background-color: #359ef3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+button:hover {
+    background-color: #0a4987;
+}
+button.active {
+    background-color: #0a4987;
+}
+button.toggle-button {
+    background-color: #4caf50;
+}
+button.toggle-button:hover {
+    background-color: #388e3c;
+}
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 10px;
+    padding: 20px;
+}
+.loading-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    color: #333;
+}
+.loading-content {
+    background: white;
+    padding: 20px 40px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.control-label {
+    font-weight: bold;
+    color: #333;
+}
+.summary-table {
+    margin: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+.summary-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.summary-table th, .summary-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+.summary-table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    /* cursor: pointer; */
+}
+/* .summary-table th:hover {
+    background-color: #e9ecef;
+} */
+.summary-table tr:last-child td {
+    border-bottom: none;
+}
+.summary-table td.number {
+    text-align: right;
+}
+.stronger {
+    color: #28a745;
+}
+.weaker {
+    color: #dc3545;
+}
+
+.flagImage {
+  float: inline-start;
+  margin-top: -300px;
+}

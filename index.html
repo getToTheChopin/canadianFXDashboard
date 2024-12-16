@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canadian Foreign Exchange Rates Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.1/chartjs-adapter-moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Canadian Foreign Exchange Rates Dashboard</h1>
+    <div class="loading-overlay">
+        <div class="loading-content">Loading Data...</div>
+    </div>
+    <div class="sticky-header">
+        <div class="controls">
+            <div class="control-group">
+                <span class="control-label">Time Period:</span>
+                <button data-period="1m">1 Month</button>
+                <button data-period="3m">3 Months</button>
+                <button data-period="6m">6 Months</button>
+                <button data-period="1y">1 Year</button>
+                <button data-period="3y">3 Years</button>
+                <button data-period="5y">5 Years</button>
+                <button data-period="all" class="active">All</button>
+            </div>
+            <button id="invertToggle" class="toggle-button">Toggle Rate Perspective</button>
+        </div>
+    </div>
+    <div class="charts-grid" id="chartsContainer"></div>
+    <div class="summary-table">
+        <table id="summaryTable">
+            <thead>
+                <tr>
+                    <th id="tableHeaderText">Currency</th>
+                    <th>Current Rate</th>
+                    <th>Avg. Rate</th>
+                    <th>% Change vs. Avg.</th>
+                    <th>Analysis</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <p>Notes:</p>
+    <p>Source: Bank of Canada -- https://www.bankofcanada.ca/rates/exchange/daily-exchange-rates/</p>
+    <p>Source: Google Finance</p>
+    <p>Currency charts sorted by trading volume: https://en.wikipedia.org/wiki/Template:Most_traded_currencies</p>
+    <p>Data updated automatically daily at midnight Eastern time</p>
+</body>
+<script src="FXDashboard.js"></script>
+</html>
