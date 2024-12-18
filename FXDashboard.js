@@ -443,7 +443,7 @@ function createPerformanceBarChart(filteredData) {
             indexAxis: 'y',
             layout: {
                 padding: {
-                    left: 5,
+                    left: 0,
                     right: 0,
                 }
             },
@@ -511,10 +511,10 @@ function createPerformanceBarChart(filteredData) {
                             size: 10,
                         }
                     },
-                    afterFit: function(scaleInstance) {
+                    // afterFit: function(scaleInstance) {
                         // Increase the width of the y-axis to accommodate all labels
-                        scaleInstance.width = 100;
-                    }
+                        // scaleInstance.width = 100;
+                    // }
                 }
             }
         }

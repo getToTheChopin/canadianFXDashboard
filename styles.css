@@ -71,6 +71,7 @@ button.toggle-button:hover {
     grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
     gap: 5px;
     padding: 5px;
+    max-width: 98%;
 }
 .loading-overlay {
     display: none;
@@ -160,13 +161,28 @@ button.toggle-button:hover {
 
 #performanceBarChartContainer {
     height: 500px;
-    margin-top: 10px;
-    grid-column: 1 / -1;
-    width: 95vw;
-    margin: 0 auto;
+    /* margin-top: 10px; */
+    /* grid-column: 1 / -1; */
+    width: 95%;
+    max-width: 1000px;
+    margin: 0 auto !important;
+    padding: 0;
     text-align: center;
+    display: block;
+
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 #performanceBarChart {
-    width: 50vw;
+    /* width: 50%; */
+    margin: 0 !important;
+    padding: 0;
+}
+
+#dataRecency {
+    text-align: center;
+    margin: 5px 0;
+    font-style: italic;
 }
