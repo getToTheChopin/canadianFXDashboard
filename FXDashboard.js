@@ -1,16 +1,15 @@
 /*
 To do:
-Sortable data / formatting for the table?
 Expand datasets to at least 10 years?
 Button for 10 years time period
 Explanatory text
-Add bullet with % change over selected time period under each chart (strengthened / weakened text)?
+Fix grammar for text displays using "All-time"
 */
 
 let globalData = null;
 let isInverted = true;
 let charts = [];
-let currentPeriod = 'all';
+let currentPeriod = '1y';
 let flagCodes = ["us","eu","jp","gb","cn","au","ch","hk","sg","se","kr","no","nz","in","mx","tw","za","br","th","id","tr","sa","my","ru","pe","vn"];
 
 const periodDays = {
@@ -23,14 +22,24 @@ const periodDays = {
     'all': Infinity
 };
 
+const periodLength = {
+    '1m': 1,
+    '3m': 3,
+    '6m': 6,
+    '1y': 1,
+    '3y': 3,
+    '5y': 5,
+    'all': Infinity
+};
+
 const periodNames = {
-    '1m': '1 month',
-    '3m': '3 month',
-    '6m': '6 month',
-    '1y': '1 year',
-    '3y': '3 year',
-    '5y': '5 year',
-    'all': 'all-time'
+    '1m': '1-Month',
+    '3m': '3-Month',
+    '6m': '6-Month',
+    '1y': '1-Year',
+    '3y': '3-Year',
+    '5y': '5-Year',
+    'all': 'All-Time'
 };
 
 function formatNumber(value) {
@@ -68,6 +77,7 @@ async function loadData() {
 
         // Transform the parsed data into the required format
         globalData = transformPapaParsedData(response.data);
+
         await createCharts(globalData);
         hideLoading();
     } catch (error) {
@@ -100,12 +110,21 @@ function transformPapaParsedData(parsedData) {
 }
 
 function filterDataByPeriod(data, period) {
-    const days = periodDays[period];
-    if (days === Infinity) return data;
-
-    const cutoffDate = moment().subtract(days, 'days');
+    if(currentPeriod == "all"){
+        return data;
+    }
+    //const days = periodDays[period];
+    //if (days === Infinity) return data;
+    const lookbackLength = periodLength[period];
+    let cutoffDate;
+    if(currentPeriod == "1m" || currentPeriod == "3m" || currentPeriod == "6m"){
+        cutoffDate = moment().subtract(lookbackLength, 'months').subtract(1,'days');
+    } else {
+        cutoffDate = moment().subtract(lookbackLength, 'years').subtract(1,'days');
+    }
+    //const cutoffDate = moment().subtract(days, 'days');
     const startIndex = data.date.findIndex(date => 
-        moment(date, 'M/D/YY').isAfter(cutoffDate));
+        moment(date, 'MM/DD/YYYY').isAfter(cutoffDate));
 
     return Object.fromEntries(
         Object.entries(data).map(([key, values]) => [
@@ -135,12 +154,23 @@ function updateSummaryTable(filteredData) {
     const tbody = document.querySelector('#summaryTable tbody');
     tbody.innerHTML = '';
 
+    const periodText = currentPeriod === 'all' ? 'All-time' : periodNames[currentPeriod];
+    const headerRow = document.querySelector('#summaryTable thead tr');
+    headerRow.innerHTML = `
+        <th>Currency</th>
+        <th>Current Rate</th>
+        <th>Starting Rate (${periodText} ago)</th>
+        <th>% Change</th>
+        <th>Analysis</th>
+    `;
+
     const summaryData = [];
 
+    let basicTableText = `The table below summarizes the performance of the CAD against all other currencies over the past ${periodNames[currentPeriod]}; rates as shown as `
     if(isInverted){
-      document.querySelector("#tableHeaderText").innerHTML = "Foreign Currency per CAD";
+      document.querySelector("#tableIntroText").innerHTML = basicTableText+"Foreign Currency per CAD";
     } else {
-      document.querySelector("#tableHeaderText").innerHTML = "CAD per Foreign Currency";
+      document.querySelector("#tableIntroText").innerHTML = basicTableText+"CAD per Foreign Currency";
     }
 
     Object.keys(filteredData).forEach(currency => {
@@ -148,29 +178,31 @@ function updateSummaryTable(filteredData) {
 
         const rateData = isInverted ? invertData(filteredData[currency]) : filteredData[currency];
         const currentRate = getCurrentRate(rateData);
-        const averageRate = calculatePeriodAverage(rateData);
+        const startingRate = rateData[0]; // First rate in the filtered period
         
-        if (currentRate === null || averageRate === null) return;
+        if (currentRate === null || startingRate === null) return;
 
-        const percentDiff = (((currentRate - averageRate) / averageRate) * 100).toFixed(1);
-        const isStronger = isInverted ? percentDiff > 0 : percentDiff < 0;
+        const percentDiff = (calcPercentageDifference(currentRate,startingRate) * 100).toFixed(1);
+        //const isStronger = isInverted ? percentDiff > 0 : percentDiff < 0;
+        const isStronger = percentDiff >= 0;
         const absPercentDiff = Math.abs(percentDiff);
 
         summaryData.push({
             currency: currency.replace('FX', ''),
             currentRate: currentRate,
-            averageRate: averageRate,
+            startingRate: startingRate,
             percentDiff: percentDiff,
             isStronger: isStronger
         });
     });
 
     // Sort by percent difference
-    if(isInverted){
-      summaryData.sort((a, b) => b.percentDiff - a.percentDiff);
-    } else {
-      summaryData.sort((b, a) => b.percentDiff - a.percentDiff);
-    }
+    // if(isInverted){
+    //   summaryData.sort((a, b) => b.percentDiff - a.percentDiff);
+    // } else {
+    //   summaryData.sort((b, a) => b.percentDiff - a.percentDiff);
+    // }
+    summaryData.sort((a, b) => b.percentDiff - a.percentDiff);
 
     let counter = 0;
 
@@ -179,11 +211,11 @@ function updateSummaryTable(filteredData) {
         row.innerHTML = `
             <td>${data.currency}</td>
             <td class="number">${formatNumber(data.currentRate)}</td>
-            <td class="number">${formatNumber(data.averageRate)}</td>
+            <td class="number">${formatNumber(data.startingRate)}</td>
             <td class="number">${(data.percentDiff)}%</td>
             <td class="${data.isStronger ? 'stronger' : 'weaker'}">
                 Current CAD rate is ${Math.abs(data.percentDiff).toFixed(1)}% 
-                ${data.isStronger ? 'stronger' : 'weaker'} than ${periodNames[currentPeriod]} average
+                ${data.isStronger ? 'stronger' : 'weaker'} versus ${periodNames[currentPeriod]} ago
             </td>
         `;
         tbody.appendChild(row);
@@ -198,25 +230,61 @@ async function createCharts(data) {
             document.getElementById('chartsContainer').innerHTML = '';
             charts = [];
             let counter = 0;
+
+            //Display the date of the most recent data
+            const mostRecentDate = moment(data.date[data.date.length - 1], 'MM/DD/YYYY').format('MMMM D, YYYY');
+            const dataRecencyInfo = document.getElementById('dataRecency');
+            if (dataRecencyInfo) {
+                dataRecencyInfo.textContent = `Data last updated on ${mostRecentDate}`;
+            }
+
+            //Update toggle perspective text
+            if(isInverted){
+                document.querySelector("#invertToggle").innerHTML = "Toggle Rate Perspective<br>Foreign Currency per CAD<br>(📈 = CAD stronger)";
+            } else {
+                document.querySelector("#invertToggle").innerHTML = "Toggle Rate Perspective<br>CAD per Foreign Currency<br>(📉 = CAD stronger)";
+            }
             
             const filteredData = filterDataByPeriod(data, currentPeriod);
             const chartsContainer = document.getElementById('chartsContainer');
             const headers = Object.keys(data).filter(header => header !== 'date');
 
-            //Update toggle perspective text
-            if(isInverted){
-              document.querySelector("#invertToggle").innerHTML = "Toggle Rate Perspective<br>Foreign Currency per CAD<br>(📈 = CAD stronger)";
-            } else {
-              document.querySelector("#invertToggle").innerHTML = "Toggle Rate Perspective<br>CAD per Foreign Currency<br>(📉 = CAD stronger)";
-            }
+            // Create the performance bar chart first
+            createPerformanceBarChart(filteredData);
 
             for (const currency of headers) {
+                const chartWrapper = document.createElement('div');
+                chartWrapper.className = 'chart-wrapper';
+
                 const chartContainer = document.createElement('div');
                 chartContainer.className = 'chart-container';
                 chartContainer.style.height = '300px';
-                
+
                 const canvas = document.createElement('canvas');
                 chartContainer.appendChild(canvas);
+                chartWrapper.appendChild(chartContainer);
+
+                // Calculate and display performance metrics
+                const performanceSummary = document.createElement('div');
+                performanceSummary.className = 'performance-summary';
+                chartWrapper.appendChild(performanceSummary);
+
+                chartsContainer.appendChild(chartWrapper);
+
+                const rateData = isInverted ? invertData(filteredData[currency]) : filteredData[currency];
+                const periodAverage = calculatePeriodAverage(rateData);
+
+                const startRate = rateData[0];
+                const endRate = rateData[rateData.length - 1];
+                const percentChange = calcPercentageDifference(endRate,startRate) * 100;
+                const absPercentChange = Math.abs(percentChange);
+                //const cadStrengthened = isInverted ? percentChange > 0 : percentChange < 0;
+                const cadStrengthened = percentChange >= 0;
+                performanceSummary.innerHTML = `
+                    <span style="color: ${cadStrengthened ? '#28a745' : '#dc3545'}">
+                        ${periodNames[currentPeriod]} performance of CAD: ${cadStrengthened ? '+' : '-'}${absPercentChange.toFixed(1)}% vs. ${currency}
+                    </span>
+                `;
 
                 //Add country flags from flagpedia API
                 const flagImage = document.createElement('img');
@@ -224,11 +292,6 @@ async function createCharts(data) {
                 flagImage.src = "https://flagcdn.com/w40/"+flagCodes[counter]+".png";
                 chartContainer.appendChild(flagImage);
                 counter++;
-
-                chartsContainer.appendChild(chartContainer);
-
-                const rateData = isInverted ? invertData(filteredData[currency]) : filteredData[currency];
-                const periodAverage = calculatePeriodAverage(rateData);
 
                 const chart = new Chart(canvas, {
                     type: 'line',
@@ -284,7 +347,7 @@ async function createCharts(data) {
                             x: {
                                 type: 'time',
                                 time: {
-                                    parser: 'M/D/YY',
+                                    parser: 'MM/DD/YYYY',
                                     tooltipFormat: 'MMM D, YYYY',
                                     unit: 'month',
                                     displayFormats: {
@@ -312,12 +375,149 @@ async function createCharts(data) {
                 });
                 
                 charts.push(chart);
+
             }
 
             updateSummaryTable(filteredData);
             hideLoading();
             resolve();
         }, 0);
+    });
+}
+
+// Add this function after the existing chart creation function
+function createPerformanceBarChart(filteredData) {
+    // Remove existing performance chart if it exists
+    const existingChart = document.getElementById('performanceBarChart');
+    if (existingChart) {
+        existingChart.remove();
+    }
+    
+    const barChartContainer = document.querySelector("#performanceBarChartContainer");
+    const canvas = document.createElement('canvas');
+    canvas.id = 'performanceBarChart';
+    barChartContainer.appendChild(canvas);
+
+    // Calculate performance data for each currency
+    const performanceData = [];
+    Object.keys(filteredData).forEach(currency => {
+        if (currency === 'date') return;
+
+        const rateData = isInverted ? invertData(filteredData[currency]) : filteredData[currency];
+        const startRate = rateData[0];
+        const endRate = rateData[rateData.length - 1];
+        const percentChange = calcPercentageDifference(endRate,startRate) * 100;
+        // Invert the percentage if we're looking at inverted rates
+        //const finalPercentChange = isInverted ? percentChange : -percentChange;
+
+        const currencyCode = currency.replace('FX', '');
+
+        performanceData.push({
+            currency: `${currencyCode}`,
+            percentChange: percentChange
+        });
+    });
+
+    // Sort data from highest to lowest
+    performanceData.sort((a, b) => b.percentChange - a.percentChange);
+
+    // Create the bar chart
+    new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: performanceData.map(d => d.currency),
+            datasets: [{
+                data: performanceData.map(d => d.percentChange),
+                backgroundColor: performanceData.map(d => 
+                    d.percentChange >= 0 ? 'rgba(40, 167, 69, 0.7)' : 'rgba(220, 53, 69, 0.7)'
+                ),
+                borderColor: performanceData.map(d => 
+                    d.percentChange >= 0 ? 'rgb(40, 167, 69)' : 'rgb(220, 53, 69)'
+                ),
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 10
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: `Canadian Dollar (CAD) Performance Against Global Currencies (${currentPeriod === 'all' ? 'All-time' : periodNames[currentPeriod]})`,
+                    font: {
+                        size: 16
+                    },
+                    padding: {
+                        top: 10,
+                        bottom: 20
+                    }
+                },
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.raw;
+                            return `CAD ${value >= 0 ? 'strengthened' : 'weakened'} by ${Math.abs(value).toFixed(1)}%`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    suggestedMax: 20,
+                    max: 40,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            if (value == 40) return '>40%';
+                            return value + '%';
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Canadian Dollar % Change vs. Select Currencies',
+                        font: {
+                            size: 14,
+                            weight: 'normal'
+                        },
+                        padding: {
+                            top: 10
+                        }
+                    },
+                },
+                y: {
+                    grid: {
+                        display: true,
+                        color: 'rgba(0, 0, 0, 0.1)',
+                        drawOnChartArea: true,
+                        drawTicks: false
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return this.getLabelForValue(value);
+                        },
+                        font: {
+                            size: 10,
+                        }
+                    },
+                    afterFit: function(scaleInstance) {
+                        // Increase the width of the y-axis to accommodate all labels
+                        scaleInstance.width = 100;
+                    }
+                }
+            }
+        }
     });
 }
 
@@ -337,6 +537,14 @@ document.getElementById('invertToggle').addEventListener('click', async () => {
     isInverted = !isInverted;
     await createCharts(globalData);
 });
+
+function calcPercentageDifference(currentRate,startingRate){
+    if(isInverted){
+        return (currentRate/startingRate)-1;
+    } else {
+        return ((1/currentRate)/(1/startingRate))-1;
+    }
+}
 
 // Load data when page loads
 loadData();

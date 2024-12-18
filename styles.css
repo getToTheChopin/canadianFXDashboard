@@ -59,7 +59,7 @@ button.toggle-button:hover {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
     gap: 10px;
-    padding: 20px;
+    padding: 10px;
 }
 .loading-overlay {
     display: none;
@@ -125,4 +125,21 @@ button.toggle-button:hover {
 .flagImage {
   float: inline-start;
   margin-top: -300px;
+}
+
+.chart-wrapper {
+    margin-bottom: 5px;
+}
+
+.performance-summary {
+    text-align: center;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+#performanceBarChartContainer {
+    height: 500px;
+    margin: 20px;
+    grid-column: 1 / -1;
+    width: 95%;
 }

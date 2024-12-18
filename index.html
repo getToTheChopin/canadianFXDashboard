@@ -12,9 +12,16 @@
 </head>
 <body>
     <h1>Canadian Foreign Exchange Rates Dashboard</h1>
+    <p>Benefits of this tool:</p>
+    <ul>
+        <li>Compare the performance of the Canadian dollar against 26 major global currencies</li>
+        <li>Summarizes all of the data in one glance so that you can get the insights at a glance, rather than the tedious process of looking up one chart at a time</li>
+        <li>Quickly see which countries have become cheaper for Canadians to travel to over the past months or years</li>
+    </ul>
     <div class="loading-overlay">
         <div class="loading-content">Loading Data...</div>
     </div>
+    <div id="dataRecency" style="text-align: center; margin: 10px 0; font-style: italic;"></div>
     <div class="sticky-header">
         <div class="controls">
             <div class="control-group">
@@ -22,15 +29,25 @@
                 <button data-period="1m">1 Month</button>
                 <button data-period="3m">3 Months</button>
                 <button data-period="6m">6 Months</button>
-                <button data-period="1y">1 Year</button>
+                <button data-period="1y" class="active">1 Year</button>
                 <button data-period="3y">3 Years</button>
                 <button data-period="5y">5 Years</button>
-                <button data-period="all" class="active">All</button>
+                <button data-period="all">All</button>
             </div>
             <button id="invertToggle" class="toggle-button">Toggle Rate Perspective</button>
         </div>
     </div>
+
+    <h2>Canadian Dollar Performance Versus All Currencies</h2>
+    <div id="performanceBarChartContainer" class="chart-container"></div>
+    &nbsp;
+
+    <h2>Individual Currency Charts Over Time</h2>
     <div class="charts-grid" id="chartsContainer"></div>
+    &nbsp;
+
+    <h2>Full Data Table</h2>
+    <p id="tableIntroText"></p>
     <div class="summary-table">
         <table id="summaryTable">
             <thead>
@@ -46,7 +63,9 @@
             </tbody>
         </table>
     </div>
+    &nbsp;
 
+    <h2>Sources, Notes, and Final Thoughts</h2>
     <p>Notes:</p>
     <p>Source: Bank of Canada -- https://www.bankofcanada.ca/rates/exchange/daily-exchange-rates/</p>
     <p>Source: Google Finance</p>
