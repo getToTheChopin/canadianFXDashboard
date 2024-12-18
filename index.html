@@ -11,7 +11,6 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Canadian Foreign Exchange Rates Dashboard</h1>
     <p>Benefits of this tool:</p>
     <ul>
         <li>Compare the performance of the Canadian dollar against 26 major global currencies</li>
@@ -19,13 +18,15 @@
         <li>Quickly see which countries have become cheaper for Canadians to travel to over the past months or years</li>
         <li>All data and charts have been automated to update daily</li>
     </ul>
+    &nbsp;
+    <h2>Canadian Foreign Exchange Rates Dashboard</h2>
     <div class="loading-overlay">
         <div class="loading-content">Loading Data...</div>
     </div>
     <div id="dataRecency"></div>
     <div class="sticky-header">
         <div class="controls">
-            <div class="control-group">
+            <pre><div class="control-group">
                 <!-- <span class="control-label">Time Period:</span> -->
                 <button data-period="1m">1 Month</button>
                 <button data-period="3m">3 Months</button>
@@ -35,7 +36,7 @@
                 <button data-period="5y">5 Years</button>
                 <button data-period="all">All-Time</button>
             </div>
-            <button id="invertToggle" class="toggle-button">Toggle Rate Perspective</button>
+            <button id="invertToggle" class="toggle-button">Toggle Rate Perspective</button></pre>
         </div>
     </div>
 

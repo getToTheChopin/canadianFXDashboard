@@ -4,6 +4,8 @@ Expand datasets to at least 10 years?
 Button for 10 years time period
 Explanatory text
 Fix grammar for text displays using "All-time"
+Can sticker header end when it gets to the notes section?
+Don't show the loading screen on startup?
 */
 
 let globalData = null;
@@ -59,7 +61,7 @@ function hideLoading() {
 
 async function loadData() {
     try {
-        showLoading();
+        //showLoading();
         // Convert Google Sheets published URL to CSV export URL
         const sheetId = '2PACX-1vQt50x6wnHqwl64lQwYyfQ7psOkICv9aaqLYY9KI5g-aqlZ7VXtIl7YWo0STGmsPPxzurgN8wtmi_Es';
         const csvUrl = `https://docs.google.com/spreadsheets/d/e/${sheetId}/pub?output=csv`;
@@ -79,9 +81,9 @@ async function loadData() {
         globalData = transformPapaParsedData(response.data);
 
         await createCharts(globalData);
-        hideLoading();
+        //hideLoading();
     } catch (error) {
-        hideLoading();
+        //hideLoading();
         alert('Error loading data: ' + error.message);
     }
 }
@@ -224,8 +226,8 @@ function updateSummaryTable(filteredData) {
 }
 
 async function createCharts(data) {
+    //showLoading();
     return new Promise((resolve) => {
-        showLoading();
         setTimeout(async () => {
             document.getElementById('chartsContainer').innerHTML = '';
             charts = [];
@@ -523,12 +525,22 @@ function createPerformanceBarChart(filteredData) {
 
 // Period selection handlers
 document.querySelectorAll('[data-period]').forEach(button => {
-    button.addEventListener('click', async (e) => {
+    // button.addEventListener('click', async (e) => {
+    //     showLoading();
+    //     document.querySelectorAll('[data-period]').forEach(btn => 
+    //         btn.classList.remove('active'));
+    //     e.target.classList.add('active');
+    //     currentPeriod = e.target.dataset.period;
+    //     await createCharts(globalData);
+    // });
+
+    button.addEventListener('click', (e) => {
+        showLoading();
         document.querySelectorAll('[data-period]').forEach(btn => 
             btn.classList.remove('active'));
         e.target.classList.add('active');
         currentPeriod = e.target.dataset.period;
-        await createCharts(globalData);
+        createCharts(globalData);
     });
 });
 

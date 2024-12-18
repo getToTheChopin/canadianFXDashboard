@@ -11,14 +11,7 @@ body {
     background-color: rgba(209, 236, 246, 0.4);
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     z-index: 1000;
-    padding: 10px 0;
-}
-.chart-container {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    padding: 5px;
-    margin: 0;
+    padding: 0;
 }
 .controls {
     text-align: center;
@@ -66,6 +59,17 @@ button.toggle-button {
 }
 button.toggle-button:hover {
     background-color: #388e3c;
+}
+.chart-container {
+
+}
+.chart-wrapper {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 5px;
+    margin: 0;
+    margin-bottom: 5px;
 }
 .charts-grid {
     display: grid;
@@ -150,11 +154,6 @@ button.toggle-button:hover {
   float: inline-start;
   margin-top: -300px;
 }
-
-.chart-wrapper {
-    margin-bottom: 5px;
-}
-
 .performance-summary {
     text-align: center;
     margin-top: 4px;
