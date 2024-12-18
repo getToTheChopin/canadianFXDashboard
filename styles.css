@@ -3,6 +3,7 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f5f5f5;
+    font-size: 16px;
 }
 .sticky-header {
     position: sticky;
@@ -16,7 +17,7 @@ body {
     background: white;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    padding: 15px;
+    padding: 8px;
     margin: 0;
 }
 .controls {
@@ -24,24 +25,34 @@ body {
     margin: 0;
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 6px;
     flex-wrap: wrap;
-    padding: 0 20px 0 20px;
+    padding: 0 5px 0 5px;
+    width: 100%;
+    font-size: 0.65em;
 }
 .control-group {
     display: flex;
-    gap: 10px;
+    gap: 6px;
     align-items: center;
 }
 button {
     padding: 10px;
-    font-size: 14px;
+    font-size: 0.95em;
     background-color: #359ef3;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s;
+}
+@media screen and (min-width: 700px) {
+    .controls{
+        font-size: 1em;
+    }
+    button{
+        font-size: 1em;
+    }
 }
 button:hover {
     background-color: #0a4987;
@@ -58,8 +69,8 @@ button.toggle-button:hover {
 .charts-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-    gap: 10px;
-    padding: 10px;
+    gap: 5px;
+    padding: 5px;
 }
 .loading-overlay {
     display: none;
@@ -86,23 +97,33 @@ button.toggle-button:hover {
     color: #333;
 }
 .summary-table {
-    margin: 20px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    overflow: hidden;
+    max-width: 95vw;
+    margin: 10px;
+    /* background: white; */
+    /* border-radius: 8px; */
+    /* overflow: hidden; */
 }
 .summary-table table {
-    width: 100%;
     border-collapse: collapse;
+    font-size: 0.75em;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+@media screen and (min-width: 700px) {
+    .summary-table table{
+        font-size: 0.95em;
+    }
 }
 .summary-table th, .summary-table td {
-    padding: 12px;
+    padding: 8px;
     text-align: left;
     border-bottom: 1px solid #eee;
 }
+.table-right-align {
+    text-align: right !important;
+}
 .summary-table th {
-    background-color: #f8f9fa;
+    background-color: #dbdbdb;
     font-weight: bold;
     /* cursor: pointer; */
 }
@@ -139,7 +160,13 @@ button.toggle-button:hover {
 
 #performanceBarChartContainer {
     height: 500px;
-    margin: 20px;
+    margin-top: 10px;
     grid-column: 1 / -1;
-    width: 95%;
+    width: 95vw;
+    margin: 0 auto;
+    text-align: center;
+}
+
+#performanceBarChart {
+    width: 50vw;
 }

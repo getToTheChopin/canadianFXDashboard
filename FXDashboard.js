@@ -158,9 +158,9 @@ function updateSummaryTable(filteredData) {
     const headerRow = document.querySelector('#summaryTable thead tr');
     headerRow.innerHTML = `
         <th>Currency</th>
-        <th>Current Rate</th>
-        <th>Starting Rate (${periodText} ago)</th>
-        <th>% Change</th>
+        <th class="table-right-align">Current Rate</th>
+        <th class="table-right-align">Starting Rate (${periodText} ago)</th>
+        <th class="table-right-align">% Change</th>
         <th>Analysis</th>
     `;
 
@@ -443,14 +443,14 @@ function createPerformanceBarChart(filteredData) {
             indexAxis: 'y',
             layout: {
                 padding: {
-                    left: 10,
-                    right: 10
+                    left: 5,
+                    right: 0,
                 }
             },
             plugins: {
                 title: {
                     display: true,
-                    text: `Canadian Dollar (CAD) Performance Against Global Currencies (${currentPeriod === 'all' ? 'All-time' : periodNames[currentPeriod]})`,
+                    text: `Canadian Dollar Performance vs. Global Currencies (${currentPeriod === 'all' ? 'All-Time' : periodNames[currentPeriod]})`,
                     font: {
                         size: 16
                     },
