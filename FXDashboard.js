@@ -302,7 +302,7 @@ async function createCharts(data) {
                                 label: currency,
                                 data: rateData,
                                 borderColor: '#2196f3',
-                                borderWidth: 1,
+                                borderWidth: 2,
                                 pointRadius: 0,
                                 fill: false,
                                 spanGaps: true
