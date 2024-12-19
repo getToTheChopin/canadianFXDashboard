@@ -11,68 +11,104 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <p>Benefits of this tool:</p>
+    <p>This tool tracks Canadian foreign exchange rates versus 26 global currencies, with daily data from 2017 up until today.</p>
+    <p>You can use this tool to:</p>
     <ul>
-        <li>Compare the performance of the Canadian dollar against 26 major global currencies</li>
-        <li>Summarizes all of the data in one glance so that you can get the insights at a glance, rather than the tedious process of looking up one chart at a time</li>
-        <li>Quickly see which countries have become cheaper for Canadians to travel to over the past months or years</li>
-        <li>All data and charts have been automated to update daily</li>
+        <li>Compare the performance of the Canadian dollar against key foreign currencies like the US dollar, British Pound, Euro, Japanese Yen, Australian dollar, Chinese Yuan, etc.</li>
+        <li>Consolidate all the data in one place to get summarized insights, rather than manually searching up one chart at a time</li>
+        <li>Find a list of countries where it's become cheaper for Canadians to travel to</li>
     </ul>
-    &nbsp;
-    <h2>Canadian Foreign Exchange Rates Dashboard</h2>
+    <p>All data and charts are automated to update daily, so you'll always find the latest information here.</p>
+
     <div class="loading-overlay">
         <div class="loading-content">Loading Data...</div>
     </div>
-    <div id="dataRecency"></div>
-    <div class="sticky-header">
-        <div class="controls">
-            <pre><div class="control-group">
-                <!-- <span class="control-label">Time Period:</span> -->
-                <button data-period="1m">1 Month</button>
-                <button data-period="3m">3 Months</button>
-                <button data-period="6m">6 Months</button>
-                <button data-period="1y" class="active">1 Year</button>
-                <button data-period="3y">3 Years</button>
-                <button data-period="5y">5 Years</button>
-                <button data-period="all">All-Time</button>
-            </div>
-            <button id="invertToggle" class="toggle-button">Toggle Rate Perspective</button></pre>
-        </div>
-    </div>
+    &nbsp;
 
     <h2>Canadian Dollar (CAD) Performance Versus All Currencies</h2>
+    <p>The bar chart below shows the performance of the Canadian dollar (CAD) against 26 foreign currencies.</p>
+    <p>Positive values (green bars) mean that the CAD has become more valuable relative to that foreign currency, while red bars (negative values) mean that the CAD has weakened.</p>
+    <p>By default, the chart shows the % change over the past year -- however, you can easily change the analysis time period by clicking one of the blue buttons below.</p>
+    <div class="controls">
+        <pre><div class="control-group">
+            <!-- <span class="control-label">Time Period:</span> -->
+            <button class="timePeriodButton" data-period="1m">1 Month</button>
+            <button class="timePeriodButton" data-period="3m">3 Months</button>
+            <button class="timePeriodButton" data-period="6m">6 Months</button>
+            <button class="timePeriodButton active" data-period="1y">1 Year</button>
+            <!-- <button class="timePeriodButton" data-period="3y">3 Years</button> -->
+            <button class="timePeriodButton" data-period="5y">5 Years</button>
+            <button class="timePeriodButton" data-period="all">All-Time</button>
+        </div></pre></div>
+    <div class="dataRecency"></div>
     <div id="performanceBarChartContainer" class=""></div>
     &nbsp;
-
-    <h2>Individual Currency Charts Over Time</h2>
-    <div class="charts-grid" id="chartsContainer"></div>
+    <div id="barChartResultDiv"></div>
     &nbsp;
 
-    <h2>Full Data Table</h2>
-    <p id="tableIntroText"></p>
-    <div class="summary-table">
-        <table id="summaryTable">
-            <thead>
-                <tr>
-                    <th id="tableHeaderText">Currency</th>
-                    <th>Current Rate</th>
-                    <th>Avg. Rate</th>
-                    <th>% Change vs. Avg.</th>
-                    <th>Analysis</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+    <div id="stickyContentContainer">
+        <h2>Canadian Foreign Exchange Rate Dashboard -- All Charts</h2>
+        <p>This section shows line charts about the performance of the Canadian dollar (CAD) against each of the 26 foreign currencies tracked -- giving a detailed view of trends / fluctuations over time. Hover over the charts for more info.</p>
+        <p class="rateExplanation"></p>
+        <div class="sticky-header" id="sticky-header">
+            <div class="controls">
+                <pre><div class="control-group">
+                    <!-- <span class="control-label">Time Period:</span> -->
+                    <button class="timePeriodButton" data-period="1m">1 Month</button>
+                    <button class="timePeriodButton" data-period="3m">3 Months</button>
+                    <button class="timePeriodButton" data-period="6m">6 Months</button>
+                    <button class="timePeriodButton active" data-period="1y">1 Year</button>
+                    <!-- <button class="timePeriodButton" data-period="3y">3 Years</button> -->
+                    <button class="timePeriodButton" data-period="5y">5 Years</button>
+                    <button class="timePeriodButton" data-period="all">All-Time</button>
+                </div><button id="invertToggle" class="toggle-button">Toggle Rate Perspective</button></pre>
+            </div>
+        </div>
+
+        <div class="dataRecency"></div>
+        <div class="charts-grid" id="chartsContainer"></div>
+        &nbsp;
+
+        <h2>Full Data Table of Canadian Foreign Exchange Rates</h2>
+        <p id="tableIntroText"></p>
+        <p class="rateExplanation"></p>
+        <div class="dataRecency"></div>
+        <div class="summary-table">
+            <table id="summaryTable">
+                <thead>
+                    <tr>
+                        <th id="tableHeaderText">Currency</th>
+                        <th>Current Rate</th>
+                        <th>Avg. Rate</th>
+                        <th>% Change vs. Avg.</th>
+                        <th>Analysis</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
     </div>
     &nbsp;
 
     <h2>Sources, Notes, and Final Thoughts</h2>
-    <p>Notes:</p>
-    <p>Source: Bank of Canada -- https://www.bankofcanada.ca/rates/exchange/daily-exchange-rates/</p>
-    <p>Source: Google Finance</p>
-    <p>Currency charts sorted by trading volume: https://en.wikipedia.org/wiki/Template:Most_traded_currencies</p>
-    <p>Data updated automatically daily at midnight Eastern time</p>
+    <p>Sources:</p>
+    <ul>
+        <li><a href="https://www.bankofcanada.ca/rates/exchange/daily-exchange-rates/" rel="noopener" target="_blank">Bank of Canada</a> historical exchange rates from 2017 to Dec. 17, 2024</li>
+        <li>Google Finance used for daily foreign exchange rate updates -- I built a simple google sheets database which automatically updates daily and feeds this dashboard</li>
+        <li>The individual currency charts (line graphs) are sorted by <a href="https://en.wikipedia.org/wiki/Template:Most_traded_currencies" rel="noopener" target="_blank">trading volume</a></li>
+    </ul>
+    <p>If you liked this post, you may be interested in some of my other tools and data essays:</p>
+    <ul>
+        <li><a href="https://themeasureofaplan.com/tools/" rel="noopener" target="_blank">Free spreadsheets and tools for budgeting, investment portfolio tracking, and more</a></li>
+        <li><a href="https://themeasureofaplan.com/canadian-housing-affordability/" target="_blank" rel="noopener">Tracking Canadian Housing Market Affordability (1999 to 2024)</a></li>
+        <li><a href="https://themeasureofaplan.com/wealth-map/" rel="noopener" target="_blank">The Wealth of Nations: income, cost of living, and purchasing power for 110 countries</a></li>
+        <li><a href="https://themeasureofaplan.com/investment-returns-by-asset-class/" rel="noopener" target="_blank">Investment returns by asset class (1985 to 2024)</a></li>
+        <li><a href="https://themeasureofaplan.com/us-stock-market-returns-1870s-to-present/" rel="noopener" target="_blank">US stock market returns -- a history from the 1870s to 2023</a></li>
+    </ul>
+
+    <p>That's all for now! Thanks for joining me on this data deep dive 🧐. Feel free to drop any comments or questions below.</p>
+
 </body>
 <script src="FXDashboard.js"></script>
 </html>

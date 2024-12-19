@@ -10,8 +10,11 @@ body {
     top: 0;
     background-color: rgba(209, 236, 246, 0.4);
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 20px;
     z-index: 1000;
     padding: 0;
+    margin: 0 auto;
+    text-align: center;
 }
 .controls {
     text-align: center;
@@ -29,6 +32,7 @@ body {
     display: flex;
     gap: 6px;
     align-items: center;
+    max-width: 98%;
 }
 button {
     padding: 10px;
@@ -56,9 +60,14 @@ button.active {
 }
 button.toggle-button {
     background-color: #4caf50;
+    margin-top: 5px;
+    margin-bottom: 0px !important;
 }
 button.toggle-button:hover {
     background-color: #388e3c;
+}
+.timePeriodButton {
+    /* max-width: 14%; */
 }
 .chart-container {
 
@@ -86,29 +95,35 @@ button.toggle-button:hover {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.35);
     z-index: 2000;
     justify-content: center;
     align-items: center;
     font-size: 24px;
-    color: #333;
+    font-weight: bold;
+    color: #000000;
 }
 .loading-content {
-    background: white;
+    background: rgb(232, 244, 245);
     padding: 20px 40px;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 .control-label {
     font-weight: bold;
     color: #333;
 }
 .summary-table {
-    max-width: 95vw;
-    margin: 10px;
+    max-width: 98%;
+    /* margin: 10px; */
+    /* margin: 0 auto;
+    justify-content: center; */
     /* background: white; */
     /* border-radius: 8px; */
     /* overflow: hidden; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .summary-table table {
     border-collapse: collapse;
@@ -182,7 +197,7 @@ button.toggle-button:hover {
     padding: 0;
 }
 
-#dataRecency {
+.dataRecency {
     text-align: center;
     margin: 5px 0;
     font-style: italic;

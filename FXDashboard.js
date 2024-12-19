@@ -2,10 +2,8 @@
 To do:
 Expand datasets to at least 10 years?
 Button for 10 years time period
-Explanatory text
-Fix grammar for text displays using "All-time"
-Can sticker header end when it gets to the notes section?
-Don't show the loading screen on startup?
+Custom start/end date
+Adjust tooltip to be dynamic 1 CAD = 0.69 USD / 1 USD = 1.43 CAD
 */
 
 let globalData = null;
@@ -13,23 +11,14 @@ let isInverted = true;
 let charts = [];
 let currentPeriod = '1y';
 let flagCodes = ["us","eu","jp","gb","cn","au","ch","hk","sg","se","kr","no","nz","in","mx","tw","za","br","th","id","tr","sa","my","ru","pe","vn"];
-
-const periodDays = {
-    '1m': 30,
-    '3m': 90,
-    '6m': 180,
-    '1y': 365,
-    '3y': 1095,
-    '5y': 1825,
-    'all': Infinity
-};
+let cutoffDate;
 
 const periodLength = {
     '1m': 1,
     '3m': 3,
     '6m': 6,
     '1y': 1,
-    '3y': 3,
+    //'3y': 3,
     '5y': 5,
     'all': Infinity
 };
@@ -39,7 +28,7 @@ const periodNames = {
     '3m': '3-Month',
     '6m': '6-Month',
     '1y': '1-Year',
-    '3y': '3-Year',
+    //'3y': '3-Year',
     '5y': '5-Year',
     'all': 'All-Time'
 };
@@ -113,12 +102,10 @@ function transformPapaParsedData(parsedData) {
 
 function filterDataByPeriod(data, period) {
     if(currentPeriod == "all"){
+        cutoffDate = moment(data.date[0], 'MM/DD/YYYY').subtract(1,'days');
         return data;
     }
-    //const days = periodDays[period];
-    //if (days === Infinity) return data;
     const lookbackLength = periodLength[period];
-    let cutoffDate;
     if(currentPeriod == "1m" || currentPeriod == "3m" || currentPeriod == "6m"){
         cutoffDate = moment().subtract(lookbackLength, 'months').subtract(1,'days');
     } else {
@@ -158,22 +145,18 @@ function updateSummaryTable(filteredData) {
 
     const periodText = currentPeriod === 'all' ? 'All-time' : periodNames[currentPeriod];
     const headerRow = document.querySelector('#summaryTable thead tr');
+    let formattedStartDate = moment(cutoffDate).add(1,'days').format('MMM-DD-YYYY');
     headerRow.innerHTML = `
         <th>Currency</th>
         <th class="table-right-align">Current Rate</th>
-        <th class="table-right-align">Starting Rate (${periodText} ago)</th>
-        <th class="table-right-align">% Change</th>
+        <th class="table-right-align">Starting Rate (${formattedStartDate})</th>
+        <th class="table-right-align">% Change (${periodNames[currentPeriod]})</th>
         <th>Analysis</th>
     `;
 
     const summaryData = [];
 
-    let basicTableText = `The table below summarizes the performance of the CAD against all other currencies over the past ${periodNames[currentPeriod]}; rates as shown as `
-    if(isInverted){
-      document.querySelector("#tableIntroText").innerHTML = basicTableText+"Foreign Currency per CAD";
-    } else {
-      document.querySelector("#tableIntroText").innerHTML = basicTableText+"CAD per Foreign Currency";
-    }
+    document.querySelector("#tableIntroText").innerHTML = `The table below summarizes the performance of the CAD against all other currencies (time period: ${periodNames[currentPeriod]}). Click the blue buttons above to change the time period.`;
 
     Object.keys(filteredData).forEach(currency => {
         if (currency === 'date') return;
@@ -199,11 +182,6 @@ function updateSummaryTable(filteredData) {
     });
 
     // Sort by percent difference
-    // if(isInverted){
-    //   summaryData.sort((a, b) => b.percentDiff - a.percentDiff);
-    // } else {
-    //   summaryData.sort((b, a) => b.percentDiff - a.percentDiff);
-    // }
     summaryData.sort((a, b) => b.percentDiff - a.percentDiff);
 
     let counter = 0;
@@ -214,10 +192,10 @@ function updateSummaryTable(filteredData) {
             <td>${data.currency}</td>
             <td class="number">${formatNumber(data.currentRate)}</td>
             <td class="number">${formatNumber(data.startingRate)}</td>
-            <td class="number">${(data.percentDiff)}%</td>
+            <td class="number ${data.isStronger ? 'stronger' : 'weaker'}">${(data.percentDiff)}%</td>
             <td class="${data.isStronger ? 'stronger' : 'weaker'}">
                 Current CAD rate is ${Math.abs(data.percentDiff).toFixed(1)}% 
-                ${data.isStronger ? 'stronger' : 'weaker'} versus ${periodNames[currentPeriod]} ago
+                ${data.isStronger ? 'stronger' : 'weaker'}
             </td>
         `;
         tbody.appendChild(row);
@@ -235,18 +213,30 @@ async function createCharts(data) {
 
             //Display the date of the most recent data
             const mostRecentDate = moment(data.date[data.date.length - 1], 'MM/DD/YYYY').format('MMMM D, YYYY');
-            const dataRecencyInfo = document.getElementById('dataRecency');
-            if (dataRecencyInfo) {
-                dataRecencyInfo.textContent = `Data last updated on ${mostRecentDate}`;
-            }
+            const dataRecencyList = document.querySelectorAll('.dataRecency');
+            let divArray = [...dataRecencyList];
+            divArray.forEach(div => {
+                div.textContent = `Data last updated on ${mostRecentDate}`;
+            });
 
             //Update toggle perspective text
             if(isInverted){
-                document.querySelector("#invertToggle").innerHTML = "Toggle Rate Perspective<br>Foreign Currency per CAD<br>(📈 = CAD stronger)";
+                document.querySelector("#invertToggle").innerHTML = "Toggle Rate Perspective<br>(📈 = CAD stronger)";
             } else {
-                document.querySelector("#invertToggle").innerHTML = "Toggle Rate Perspective<br>CAD per Foreign Currency<br>(📉 = CAD stronger)";
+                document.querySelector("#invertToggle").innerHTML = "Toggle Rate Perspective<br>(📉 = CAD stronger)";
             }
-            
+
+            //Rate explanation text
+            const rateExplanationList = document.querySelectorAll('.rateExplanation');
+            let textArray = [...rateExplanationList];
+            textArray.forEach(para => {
+                if(isInverted){
+                    para.innerHTML = `Rates are currently shown as <span class="highlight-yellow">1 CAD = X foreign currency</span>. To show the opposite perspective, click the green button (Toggle Rate Perspective).`;
+                } else {
+                    para.innerHTML = `Rates are currently shown as <span class="highlight-yellow">1 foreign currency = X CAD</span>. To show the opposite perspective, click the green button (Toggle Rate Perspective).`;
+                }
+            });
+
             const filteredData = filterDataByPeriod(data, currentPeriod);
             const chartsContainer = document.getElementById('chartsContainer');
             const headers = Object.keys(data).filter(header => header !== 'date');
@@ -327,11 +317,12 @@ async function createCharts(data) {
                             title: {
                                 display: true,
                                 text: isInverted ? 
-                                    `${currency} per CAD` : 
-                                    `CAD per ${currency}`,
+                                    `1 CAD = X ${currency}` : 
+                                    `1 ${currency} = X CAD`,
                                 font: {
-                                    size: 16
-                                }
+                                    size: 18,
+                                },
+                                color: "#black",
                             },
                             legend: {
                                 display: true,
@@ -381,7 +372,7 @@ async function createCharts(data) {
             }
 
             updateSummaryTable(filteredData);
-            hideLoading();
+            //hideLoading();
             resolve();
         }, 0);
     });
@@ -475,14 +466,14 @@ function createPerformanceBarChart(filteredData) {
             },
             scales: {
                 x: {
-                    suggestedMax: 20,
-                    max: 40,
+                    // suggestedMax: 20,
+                    // max: 40,
                     grid: {
                         color: 'rgba(0, 0, 0, 0.1)'
                     },
                     ticks: {
                         callback: function(value) {
-                            if (value == 40) return '>40%';
+                            // if (value == 40) return '>40%';
                             return value + '%';
                         }
                     },
@@ -521,33 +512,56 @@ function createPerformanceBarChart(filteredData) {
             }
         }
     });
+
+    //Display text for top 3 / bottom 3 values
+    const periodText = currentPeriod === 'all' ? 'all-time' : periodNames[currentPeriod];
+    const strongestPerformers = performanceData.slice(0, 3);
+    const weakestPerformers = performanceData.slice(-3).reverse();
+    const summaryDiv = document.querySelector("#barChartResultDiv");
+
+    let summaryHTML = `<p style="font-weight: bold;">Performance Summary (${periodText}):</p>`;
+    summaryHTML += '<p style="color: #28a745;">Strongest CAD Performance:</p>';
+    summaryHTML += '<ul>';
+    strongestPerformers.forEach(perf => {
+        summaryHTML += `<li>CAD strengthened by ${Math.abs(perf.percentChange).toFixed(1)}% against ${perf.currency}</li>`;
+    });
+    summaryHTML += '</ul>';
+
+    summaryHTML += '<p style="color: #dc3545;">Weakest CAD Performance:</p>';
+    summaryHTML += '<ul>';
+    weakestPerformers.forEach(perf => {
+        summaryHTML += `<li>CAD weakened by ${Math.abs(perf.percentChange).toFixed(1)}% against ${perf.currency}</li>`;
+    });
+    summaryHTML += '</ul>';
+
+    summaryDiv.innerHTML = summaryHTML;
 }
 
 // Period selection handlers
 document.querySelectorAll('[data-period]').forEach(button => {
-    // button.addEventListener('click', async (e) => {
-    //     showLoading();
-    //     document.querySelectorAll('[data-period]').forEach(btn => 
-    //         btn.classList.remove('active'));
-    //     e.target.classList.add('active');
-    //     currentPeriod = e.target.dataset.period;
-    //     await createCharts(globalData);
-    // });
-
-    button.addEventListener('click', (e) => {
+    button.addEventListener('click', async (e) => {
         showLoading();
-        document.querySelectorAll('[data-period]').forEach(btn => 
-            btn.classList.remove('active'));
-        e.target.classList.add('active');
         currentPeriod = e.target.dataset.period;
-        createCharts(globalData);
+        console.log("Time period: "+currentPeriod);
+
+        document.querySelectorAll('[data-period]').forEach(btn => {
+            btn.classList.remove('active');
+            if(btn.dataset.period == currentPeriod){
+                btn.classList.add('active');
+            }
+        });
+        
+        await createCharts(globalData);
+        hideLoading();
     });
 });
 
 // Toggle button handler
 document.getElementById('invertToggle').addEventListener('click', async () => {
+    showLoading();
     isInverted = !isInverted;
     await createCharts(globalData);
+    hideLoading();
 });
 
 function calcPercentageDifference(currentRate,startingRate){
